@@ -17,6 +17,10 @@ use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\SqlWalker;
 use VertigoLabs\DoctrineFullTextPostgres\ORM\Mapping\TsVector;
 
+/**
+ * Class TSFunction
+ * @package VertigoLabs\DoctrineFullTextPostgres\ORM\Query\AST\Functions
+ */
 abstract class TSFunction extends FunctionNode
 {
 	/**

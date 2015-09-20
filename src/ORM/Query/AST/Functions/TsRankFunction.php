@@ -10,6 +10,10 @@ namespace VertigoLabs\DoctrineFullTextPostgres\ORM\Query\AST\Functions;
 
 use Doctrine\ORM\Query\SqlWalker;
 
+/**
+ * Class TsRankFunction
+ * @package VertigoLabs\DoctrineFullTextPostgres\ORM\Query\AST\Functions
+ */
 class TsRankFunction extends TSFunction
 {
 	public function getSql(SqlWalker $sqlWalker)

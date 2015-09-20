@@ -11,10 +11,14 @@ namespace VertigoLabs\DoctrineFullTextPostgres\DBAL\Types;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 
+/**
+ * Class TsVector
+ * @package VertigoLabs\DoctrineFullTextPostgres\DBAL\Types
+ * @todo figure out how to get the weight into the converted sql code
+ */
 class TsVector extends Type
 {
 
-	private $test;
 	/**
 	 * Gets the SQL declaration snippet for a field of this type.
 	 *
@@ -64,19 +68,6 @@ class TsVector extends Type
 	public function convertToDatabaseValue($value, AbstractPlatform $platform)
 	{
 		return $value['data'];
-//		$retVal=[];
-//		if (is_array($value)) {
-//			if (isset($value['language'])) {
-//				$retVal[] = "'".$value['language']."'";
-//			}
-//			if (isset($value['data'])) {
-//				$retVal[] = "'".$value['data']."'";
-//			}
-//			$retVal = join(',',$retVal);
-//		}else{
-//			$retVal = $value;
-//		}
-//		return $retVal;
 	}
 
 	/**

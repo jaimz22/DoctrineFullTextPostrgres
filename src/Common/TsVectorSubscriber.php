@@ -22,6 +22,10 @@ use Doctrine\ORM\Mapping\MappingException;
 use VertigoLabs\DoctrineFullTextPostgres\ORM\Mapping\TsVector;
 use \VertigoLabs\DoctrineFullTextPostgres\DBAL\Types\TsVector as TsVectorType;
 
+/**
+ * Class TsVectorSubscriber
+ * @package VertigoLabs\DoctrineFullTextPostgres\Common
+ */
 class TsVectorSubscriber implements EventSubscriber
 {
 	const ANNOTATION_NS = 'VertigoLabs\\DoctrineFullTextPostgres\\ORM\\Mapping\\';
@@ -142,7 +146,7 @@ class TsVectorSubscriber implements EventSubscriber
 			$property = $class->getProperty($fieldName);
 			/** @var Column $propAnnot */
 			$propAnnot = $this->reader->getPropertyAnnotation($property, Column::class );
-			if ($propAnnot->nullable == false) {
+			if ($propAnnot->nullable === false) {
 				return false;
 			}
 		}
