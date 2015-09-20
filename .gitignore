@@ -1,0 +1,7 @@
+### JetBrains template
+*.iml
+.idea/
+### Composer template
+composer.phar
+vendor/
+composer.lock

@@ -1,0 +1,28 @@
+{
+    "name": "vertigolabs/doctrine-full-text-postgres",
+    "description": "Tools to use full-text searching in Postgresql with Doctrine",
+    "authors": [
+        {
+            "name": "James Murray",
+            "email": "jaimz@vertigolabs.org"
+        }
+    ],
+    "license": "MIT",
+    "type": "library",
+    "require": {
+        "doctrine/orm": "~2.4",
+        "php": ">=5.4"
+    },
+    "require-dev": {
+        "doctrine/orm": ">=2.5.0",
+        "doctrine/common": ">=2.5.0",
+        "phpunit/phpunit": "~4.4",
+        "phpunit/phpunit-mock-objects": "~2.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "VertigoLabs\\DoctrineFullTextPostgres\\": "src/"
+        }
+    },
+    "minimum-stability": "dev"
+}
