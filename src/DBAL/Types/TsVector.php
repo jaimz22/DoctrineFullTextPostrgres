@@ -79,4 +79,9 @@ class TsVector extends Type
 	{
 		return 'tsvector';
 	}
+
+	public function getMappedDatabaseTypes(AbstractPlatform $platform)
+	{
+		return ['tsvector'];
+	}
 }
