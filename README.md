@@ -30,7 +30,7 @@ A simple to use set of database types, and annotations to use postgresql's full 
  
 ## Symfony installation
  
- * Add to config
+ * Add to app/config/config.yml
  
  ```yaml
  doctrine:
@@ -45,6 +45,15 @@ A simple to use set of database types, and annotations to use postgresql's full 
                          tsquery: VertigoLabs\DoctrineFullTextPostgres\ORM\Query\AST\Functions\TsQueryFunction
                          tsrank: VertigoLabs\DoctrineFullTextPostgres\ORM\Query\AST\Functions\TsRankFunction
                          tsrankcd: VertigoLabs\DoctrineFullTextPostgres\ORM\Query\AST\Functions\TsRankCDFunction
+ ```
+ 
+ * Add subscriber to evens 
+ 
+ ```yaml
+ app.fsearch.subscriber:
+    class: VertigoLabs\DoctrineFullTextPostgres\Common\TsVectorSubscriber
+    tags:
+        - { name: doctrine.event_subscriber } 
  ```
  
 ## Usage
