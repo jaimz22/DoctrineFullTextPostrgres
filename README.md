@@ -47,7 +47,7 @@ A simple to use set of database types, and annotations to use postgresql's full 
                          tsrankcd: VertigoLabs\DoctrineFullTextPostgres\ORM\Query\AST\Functions\TsRankCDFunction
  ```
  
- * Add subscriber to evens 
+ * Add subscriber to services 
  
  ```yaml
  app.fsearch.subscriber:
