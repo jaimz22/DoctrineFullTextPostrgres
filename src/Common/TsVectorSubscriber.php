@@ -13,12 +13,15 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
-use Doctrine\ORM\Event\PreFlushEventArgs;
+use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\MappingException;
+use Symfony\Component\PropertyAccess\PropertyAccess;
+use Symfony\Component\PropertyAccess\PropertyAccessor;
 use VertigoLabs\DoctrineFullTextPostgres\ORM\Mapping\TsVector;
 use \VertigoLabs\DoctrineFullTextPostgres\DBAL\Types\TsVector as TsVectorType;
 
@@ -55,7 +58,8 @@ class TsVectorSubscriber implements EventSubscriber
     {
         return [
             Events::loadClassMetadata,
-            Events::preFlush
+            Events::prePersist,
+            Events::preUpdate
         ];
     }
 
@@ -78,43 +82,53 @@ class TsVectorSubscriber implements EventSubscriber
                 'type' => 'tsvector',
                 'weight' => strtoupper($annotation->weight),
                 'language' => strtolower($annotation->language),
-                'nullable' => $this->isWatchFieldNullable($class, $annotation)
+                'nullable' => $this->isWatchFieldNullable($class, $annotation),
+                'fields' => $annotation->fields
             ]);
         }
     }
 
-    public function preFlush(PreFlushEventArgs $eventArgs)
+    public function prePersist(LifecycleEventArgs $args)
     {
-        $uow = $eventArgs->getEntityManager()->getUnitOfWork();
-        $uow->computeChangeSets();
-        $insertions = $uow->getScheduledEntityInsertions();
-        $updates = $uow->getScheduledEntityUpdates();
-        $entities = array_merge($insertions, $updates);
+        $this->preFlush($args);
+    }
 
-        foreach ($entities as $entity) {
-            $refl = new \ReflectionObject($entity);
-            foreach ($refl->getProperties() as $prop) {
-                /** @var TsVector $annot */
-                $annot = $this->reader->getPropertyAnnotation($prop, TsVector::class);
-                if (is_null($annot)) {
+    public function preUpdate(PreUpdateEventArgs $args)
+    {
+        $this->preFlush($args);
+    }
+
+    private function preFlush(LifecycleEventArgs $args)
+    {
+        $entity = $args->getObject();
+        $metadata = $args->getObjectManager()->getClassMetadata(get_class($entity));
+
+        $accessor = PropertyAccess::createPropertyAccessor();
+
+        foreach ($metadata->getFieldNames() as $prop) {
+            $field = $metadata->getFieldMapping($prop);
+
+            if ($field['type'] !== 'tsvector') {
+                continue;
+            }
+
+            if ($args instanceof PreUpdateEventArgs) {
+                $changedFields = array_keys($args->getEntityChangeSet());
+                if (!array_intersect($field['fields'], $changedFields)) {
                     continue;
                 }
-
-                $fields = $annot->fields;
-                $tsVectorVal = [];
-                foreach ($fields as $field) {
-                    $field = $refl->getProperty($field);
-                    $field->setAccessible(true);
-                    $tsVectorVal[] = $field->getValue($entity);
-                }
-                $prop->setAccessible(true);
-                $value = [
-                    'data' => explode(' ', $tsVectorVal),
-                    'language' => $annot->language,
-                    'weight' => $annot->weight
-                ];
-                $prop->setValue($entity, $value);
             }
+
+            $tsVectorVal = [];
+            foreach ($field['fields'] as $fieldName) {
+                $tsVectorVal[] = $accessor->getValue($entity, $fieldName);
+            }
+            $value = [
+                'data' => implode(' ', $tsVectorVal),
+                'language' => $field['language'],
+                'weight' => $field['weight']
+            ];
+            $accessor->setValue($entity, $prop, $value);
         }
     }
 

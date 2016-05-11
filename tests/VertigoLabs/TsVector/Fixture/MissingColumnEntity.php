@@ -20,14 +20,15 @@ use VertigoLabs\DoctrineFullTextPostgres\ORM\Mapping\TsVector;
  */
 class MissingColumnEntity
 {
-	/**
-	 * @var integer
-	 * @Id()
-	 * @Column(name="id", type="integer", nullable=false)
-	 */
-	private $id;
-	/**
-	 * @TsVector(fields={"missingColumn"})
-	 */
-	private $missingColumnFTS;
+    /**
+     * @var integer
+     * @Id()
+     * @Column(name="id", type="integer", nullable=false)
+     */
+    private $id;
+    
+    /**
+     * @TsVector(fields={"missingColumn"})
+     */
+    private $missingColumnFTS;
 }

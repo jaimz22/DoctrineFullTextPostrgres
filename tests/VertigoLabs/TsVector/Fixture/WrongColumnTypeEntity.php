@@ -19,18 +19,20 @@ use VertigoLabs\DoctrineFullTextPostgres\ORM\Mapping\TsVector;
  */
 class WrongColumnTypeEntity
 {
-	/**
-	 * @var integer
-	 * @Id()
-	 * @Column(name="id", type="integer", nullable=false)
-	 */
-	private $id;
-	/**
-	 * @Column(type="integer", nullable=true)
-	 */
-	private $wrongColumnType;
-	/**
-	 * @TsVector(fields={"wrongColumnType"})
-	 */
-	private $wrongColumnTypeFTS;
+    /**
+     * @var integer
+     * @Id()
+     * @Column(name="id", type="integer", nullable=false)
+     */
+    private $id;
+
+    /**
+     * @Column(type="integer", nullable=true)
+     */
+    private $wrongColumnType;
+
+    /**
+     * @TsVector(fields={"wrongColumnType"})
+     */
+    private $wrongColumnTypeFTS;
 }

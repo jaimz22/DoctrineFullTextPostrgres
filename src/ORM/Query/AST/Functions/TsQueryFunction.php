@@ -16,9 +16,9 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class TsQueryFunction extends TSFunction
 {
-	public function getSql(SqlWalker $sqlWalker)
-	{
-		$this->findFTSField($sqlWalker);
-		return $this->ftsField->dispatch($sqlWalker).' @@ to_tsquery('.$this->queryString->dispatch($sqlWalker).')';
-	}
+    public function getSql(SqlWalker $sqlWalker)
+    {
+        $this->findFTSField($sqlWalker);
+        return $this->ftsField->dispatch($sqlWalker).' @@ to_tsquery('.$this->queryString->dispatch($sqlWalker).')';
+    }
 }

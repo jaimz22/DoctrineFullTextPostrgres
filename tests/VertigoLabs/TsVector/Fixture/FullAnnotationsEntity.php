@@ -19,19 +19,21 @@ use VertigoLabs\DoctrineFullTextPostgres\ORM\Mapping\TsVector;
  */
 class FullAnnotationsEntity
 {
-	/**
-	 * @var integer
-	 * @Id()
-	 * @Column(name="id", type="integer", nullable=false)
-	 */
-	private $id;
-	/**
-	 * @var string
-	 * @Column(type="string", nullable=true)
-	 */
-	private $allCustom;
-	/**
-	 * @TsVector(fields={"allCustom"}, name="fts_custom", weight="A", language="french")
-	 */
-	private $allCustomFTS;
+    /**
+     * @var integer
+     * @Id()
+     * @Column(name="id", type="integer", nullable=false)
+     */
+    private $id;
+    
+    /**
+     * @var string
+     * @Column(type="string", nullable=true)
+     */
+    private $allCustom;
+    
+    /**
+     * @TsVector(fields={"allCustom"}, name="fts_custom", weight="A", language="french")
+     */
+    private $allCustomFTS;
 }
