@@ -13,7 +13,7 @@ A simple to use set of database types, and annotations to use postgresql's full 
  * Register Doctrine Type:
  
  ```php
- Type::addType('tsvector',\VertigoLabs\DoctrineFullTextPostgres\ORM\Mapping\TsVectorType::class);
+ Type::addType('tsvector',\VertigoLabs\DoctrineFullTextPostgres\DBAL\Types\TsVector::class);
  ```
  * Register Doctrine Event Subscriber
  
