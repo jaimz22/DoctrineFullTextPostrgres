@@ -20,107 +20,134 @@ use TsVector\Fixture\WrongColumnTypeEntity;
 
 class TsVectorTest extends BaseORMTestCase
 {
-	public function setUp()
-	{
-		parent::setUp();
+    public function setUp()
+    {
+        parent::setUp();
 
-		$evm = new EventManager();
-		$evm->addEventSubscriber(new TsVectorSubscriber());
-//		$this->getMock
-	}
+        $evm = new EventManager();
+        $evm->addEventSubscriber(new TsVectorSubscriber());
+    }
 
-	/**
-	 */
-	public function shouldReceiveAnnotation()
-	{
-		$reader = new AnnotationReader();
-		$refObj = new \ReflectionClass(Article::class);
+    /**
+     */
+    public function shouldReceiveAnnotation()
+    {
+        $reader = new AnnotationReader();
+        $refObj = new \ReflectionClass(Article::class);
 
-		$titleProp = $refObj->getProperty('title');
-		$bodyProp = $refObj->getProperty('body');
-		$titleAnnotation = $reader->getPropertyAnnotation($titleProp, 'Vertigolabs\\DoctrineFullTextPostgres\\ORM\\Mapping\\TsVector');
-		$bodyAnnotation = $reader->getPropertyAnnotation($bodyProp, 'Vertigolabs\\DoctrineFullTextPostgres\\ORM\\Mapping\\TsVector');
+        $titleProp = $refObj->getProperty('title');
+        $bodyProp = $refObj->getProperty('body');
+        $titleAnnotation = $reader->getPropertyAnnotation($titleProp, 'Vertigolabs\\DoctrineFullTextPostgres\\ORM\\Mapping\\TsVector');
+        $bodyAnnotation = $reader->getPropertyAnnotation($bodyProp, 'Vertigolabs\\DoctrineFullTextPostgres\\ORM\\Mapping\\TsVector');
 
-		$this->assertNotNull($titleAnnotation,'TsVector annotation not found for title');
-		$this->assertNotNull($bodyAnnotation,'TsVector annotation not found for body');
-	}
+        static::assertNotNull($titleAnnotation, 'TsVector annotation not found for title');
+        static::assertNotNull($bodyAnnotation, 'TsVector annotation not found for body');
+    }
 
-	/**
-	 * @test
-	 */
-	public function shouldReceiveDefaults()
-	{
-		$metaData = $this->em->getClassMetadata(DefaultAnnotationsEntity::class);
+    /**
+     * @test
+     */
+    public function shouldReceiveDefaults()
+    {
+        $metaData = $this->em->getClassMetadata(DefaultAnnotationsEntity::class);
 
-		$allDefaultsMetadata = $metaData->getFieldMapping('allDefaultsFTS');
+        $allDefaultsMetadata = $metaData->getFieldMapping('allDefaultsFTS');
 
-		$this->assertEquals('allDefaultsFTS', $allDefaultsMetadata['fieldName']);
-		$this->assertEquals('allDefaultsFTS', $allDefaultsMetadata['columnName']);
-		$this->assertEquals('D', $allDefaultsMetadata['weight']);
-		$this->assertEquals('english', $allDefaultsMetadata['language']);
-	}
+        static::assertEquals('allDefaultsFTS', $allDefaultsMetadata['fieldName']);
+        static::assertEquals('allDefaultsFTS', $allDefaultsMetadata['columnName']);
+        static::assertEquals('D', $allDefaultsMetadata['weight']);
+        static::assertEquals('english', $allDefaultsMetadata['language']);
+    }
 
-	/**
-	 * @test
-	 */
-	public function shouldReceiveCustom()
-	{
-		$metaData = $this->em->getClassMetadata(FullAnnotationsEntity::class);
+    /**
+     * @test
+     */
+    public function shouldReceiveCustom()
+    {
+        $metaData = $this->em->getClassMetadata(FullAnnotationsEntity::class);
 
-		$allDefaultsMetadata = $metaData->getFieldMapping('allCustomFTS');
+        $allDefaultsMetadata = $metaData->getFieldMapping('allCustomFTS');
 
-		$this->assertEquals('allCustomFTS', $allDefaultsMetadata['fieldName']);
-		$this->assertEquals('fts_custom', $allDefaultsMetadata['columnName']);
-		$this->assertEquals('A', $allDefaultsMetadata['weight']);
-		$this->assertEquals('french', $allDefaultsMetadata['language']);
-	}
+        static::assertEquals('allCustomFTS', $allDefaultsMetadata['fieldName']);
+        static::assertEquals('fts_custom', $allDefaultsMetadata['columnName']);
+        static::assertEquals('A', $allDefaultsMetadata['weight']);
+        static::assertEquals('french', $allDefaultsMetadata['language']);
+    }
 
-	/**
-	 * @test
-	 * @expectedException \Doctrine\ORM\Mapping\MappingException
-	 * @expectedExceptionMessage Class does not contain missingColumn property
-	 */
-	public function mustHaveColumn()
-	{
-		$metaData = $this->em->getClassMetadata(MissingColumnEntity::class);
-	}
+    /**
+     * @test
+     * @expectedException \Doctrine\ORM\Mapping\MappingException
+     * @expectedExceptionMessage Class does not contain missingColumn property
+     */
+    public function mustHaveColumn()
+    {
+        $metaData = $this->em->getClassMetadata(MissingColumnEntity::class);
+    }
 
-	/**
-	 * @test
-	 * @expectedException \Doctrine\Common\Annotations\AnnotationException
-	 * @expectedExceptionMessage TsVector\Fixture\WrongColumnTypeEntity::wrongColumnType TsVector field can only be assigned to String and Text columns. TsVector\Fixture\WrongColumnTypeEntity::wrongColumnType has the type integer
-	 */
-	public function mustHaveCorrectColumnType()
-	{
-		$metaData = $this->em->getClassMetadata(WrongColumnTypeEntity::class);
-	}
+    /**
+     * @test
+     * @expectedException \Doctrine\Common\Annotations\AnnotationException
+     * @expectedExceptionMessage TsVector\Fixture\WrongColumnTypeEntity::wrongColumnType TsVector field can only be assigned to String and Text columns. TsVector\Fixture\WrongColumnTypeEntity::wrongColumnType has the type integer
+     */
+    public function mustHaveCorrectColumnType()
+    {
+        $metaData = $this->em->getClassMetadata(WrongColumnTypeEntity::class);
+    }
 
-	/**
-	 * @test
-	 */
-	public function shouldCreateSchema()
-	{
-		$classes = [
-			$this->em->getClassMetadata(Article::class)
-		];
-		$sql = $this->schemaTool->getCreateSchemaSql($classes);
+    /**
+     * @test
+     */
+    public function shouldCreateSchema()
+    {
+        $classes = [
+            $this->em->getClassMetadata(Article::class)
+        ];
+        $sql = $this->schemaTool->getCreateSchemaSql($classes);
 
-		$this->assertRegExp('/title_fts tsvector|body_fts tsvector/',$sql[0]);
-	}
+        static::assertRegExp('/title_fts tsvector|body_fts tsvector/', $sql[0]);
+    }
 
-	/**
-	 * @test
-	 */
-	public function shouldInsertData()
-	{
-		$this->setUpSchema([Article::class]);
+    /**
+     * @test
+     */
+    public function shouldInsertData()
+    {
+        $this->setUpSchema([Article::class]);
 
-		$article = new Article();
-		$article->setTitle('test one');
-		$article->setBody('This is test one');
+        $article = new Article();
+        $article->setTitle('test one');
+        $article->setBody('This is test one');
 
-		$this->em->persist($article);
-		$this->em->flush();
-	}
+        $this->em->persist($article);
+        $this->em->flush();
+    }
 
+    /**
+     * @test
+     */
+    public function shouldUpdateData()
+    {
+        $this->setUpSchema([Article::class]);
+
+        $query = $this->em->createQuery('SELECT a FROM TsVector\\Fixture\\Article a WHERE tsquery(a.title'.',:searchQuery) = true');
+
+        $article = new Article();
+        $article->setTitle('test one');
+        $article->setBody('empty');
+        $this->em->persist($article);
+        $this->em->flush();
+
+        $query->setParameter('searchQuery', 'one');
+        static::assertCount(1, $query->getArrayResult());
+        $query->setParameter('searchQuery', 'two');
+        static::assertCount(0, $query->getArrayResult());
+
+        $article->setTitle('test two');
+        $this->em->flush();
+
+        $query->setParameter('searchQuery', 'one');
+        static::assertCount(0, $query->getArrayResult());
+        $query->setParameter('searchQuery', 'two');
+        static::assertCount(1, $query->getArrayResult());
+    }
 }

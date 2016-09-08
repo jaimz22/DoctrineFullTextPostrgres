@@ -16,9 +16,9 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class TsRankCDFunction extends TSFunction
 {
-	public function getSql(SqlWalker $sqlWalker)
-	{
-		$this->findFTSField($sqlWalker);
-		return 'ts_rank_cd('.$this->ftsField->dispatch($sqlWalker).', to_tsquery('.$this->queryString->dispatch($sqlWalker).'))';
-	}
+    public function getSql(SqlWalker $sqlWalker)
+    {
+        $this->findFTSField($sqlWalker);
+        return 'ts_rank_cd('.$this->ftsField->dispatch($sqlWalker).', to_tsquery('.$this->queryString->dispatch($sqlWalker).'))';
+    }
 }

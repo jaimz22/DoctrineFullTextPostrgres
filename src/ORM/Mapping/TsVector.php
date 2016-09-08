@@ -19,22 +19,22 @@ use Doctrine\Common\Annotations\Annotation\Target;
  */
 final class TsVector extends Annotation
 {
-	/**
-	 * @var array<string>
-	 * @Annotation\Required()
-	 */
-	public $fields = [];
-	/**
-	 * @var string
-	 */
-	public $name;
-	/**
-	 * @var string
-	 * @Annotation\Enum({'A',"B","C","D"})
-	 */
-	public $weight = 'D';
-	/**
-	 * @var string
-	 */
-	public $language = 'english';
+    /**
+     * @var array<string>
+     * @Annotation\Required()
+     */
+    public $fields = [];
+    /**
+     * @var string
+     */
+    public $name;
+    /**
+     * @var string
+     * @Annotation\Enum({'A',"B","C","D"})
+     */
+    public $weight = 'D';
+    /**
+     * @var string
+     */
+    public $language = 'english';
 }

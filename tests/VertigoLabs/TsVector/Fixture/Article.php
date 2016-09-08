@@ -23,74 +23,115 @@ use VertigoLabs\DoctrineFullTextPostgres\ORM\Mapping\TsVector;
  */
 class Article
 {
-	/**
-	 * @var integer
-	 * @Id()
-	 * @GeneratedValue(strategy="IDENTITY")
-	 * @Column(name="id", type="integer", nullable=false)
-	 */
-	private $id;
+    /**
+     * @var integer
+     * @Id()
+     * @GeneratedValue(strategy="IDENTITY")
+     * @Column(name="id", type="integer", nullable=false)
+     */
+    private $id;
 
-	/**
-	 * @var string
-	 * @Column(name="title", type="string", nullable=false)
-	 */
-	private $title;
+    /**
+     * @var string
+     * @Column(name="title", type="string", nullable=false)
+     */
+    private $title;
 
-	/**
-	 * @var \VertigoLabs\DoctrineFullTextPostgres\DBAL\Types\TsVector
-	 * @TsVector(name="title_fts", fields={"title"}, weight="A")
-	 */
-	private $titleFTS;
-	/**
-	 * @var string
-	 * @Column(name="body", type="text", nullable=true)
-	 */
-	private $body;
+    /**
+     * @var \VertigoLabs\DoctrineFullTextPostgres\DBAL\Types\TsVector
+     * @TsVector(name="title_fts", fields={"title"}, weight="A")
+     */
+    private $titleFTS;
+    
+    /**
+     * @var string
+     * @Column(name="body", type="text", nullable=true)
+     */
+    private $body;
 
-	/**
-	 * @var \VertigoLabs\DoctrineFullTextPostgres\DBAL\Types\TsVector
-	 * @TsVector(name="body_fts", fields={"body"})
-	 */
-	private $bodyFTS;
+    /**
+     * @var \VertigoLabs\DoctrineFullTextPostgres\DBAL\Types\TsVector
+     * @TsVector(name="body_fts", fields={"body"})
+     */
+    private $bodyFTS;
 
-	/**
-	 * @return string
-	 */
-	public function getTitle()
-	{
-		return $this->title;
-	}
+    /**
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
 
-	/**
-	 * @param string $title
-	 *
-	 * @return Article
-	 */
-	public function setTitle( $title )
-	{
-		$this->title = $title;
+    /**
+     * @param string $title
+     *
+     * @return Article
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
 
-		return $this;
-	}
+        return $this;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getBody()
-	{
-		return $this->body;
-	}
+    /**
+     * @return string
+     */
+    public function getBody()
+    {
+        return $this->body;
+    }
 
-	/**
-	 * @param string $body
-	 *
-	 * @return Article
-	 */
-	public function setBody( $body )
-	{
-		$this->body = $body;
+    /**
+     * @param string $body
+     *
+     * @return Article
+     */
+    public function setBody($body)
+    {
+        $this->body = $body;
 
-		return $this;
-	}
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTitleFTS()
+    {
+        return $this->titleFTS;
+    }
+
+    /**
+     * @param string
+     *
+     * @return Article
+     */
+    public function setTitleFTS($titleFTS)
+    {
+        $this->titleFTS = $titleFTS;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBodyFTS()
+    {
+        return $this->bodyFTS;
+    }
+
+    /**
+     * @param string
+     *
+     * @return Article
+     */
+    public function setBodyFTS($bodyFTS)
+    {
+        $this->bodyFTS = $bodyFTS;
+
+        return $this;
+    }
 }
