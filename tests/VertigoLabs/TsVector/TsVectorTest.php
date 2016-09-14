@@ -88,7 +88,7 @@ class TsVectorTest extends BaseORMTestCase
 	/**
 	 * @test
 	 * @expectedException \Doctrine\Common\Annotations\AnnotationException
-	 * @expectedExceptionMessage TsVector\Fixture\WrongColumnTypeEntity::wrongColumnType TsVector field can only be assigned to String and Text columns. TsVector\Fixture\WrongColumnTypeEntity::wrongColumnType has the type integer
+	 * @expectedExceptionMessage TsVector\Fixture\WrongColumnTypeEntity::wrongColumnTypeFTS TsVector field can only be assigned to ( "string" | "text" | "array" | "simple_array" | "json" | "json_array" ) columns. TsVector\Fixture\WrongColumnTypeEntity::wrongColumnType has the type integer
 	 */
 	public function mustHaveCorrectColumnType()
 	{
