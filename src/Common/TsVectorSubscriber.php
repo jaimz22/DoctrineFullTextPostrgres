@@ -31,6 +31,15 @@ class TsVectorSubscriber implements EventSubscriber
 	const ANNOTATION_NS = 'VertigoLabs\\DoctrineFullTextPostgres\\ORM\\Mapping\\';
 	const ANNOTATION_TSVECTOR = 'TsVector';
 
+	private static $supportedTypes = [
+		'string',
+		'text',
+		'array',
+		'simple_array',
+		'json',
+		'json_array',
+	];
+
 	/**
 	 * @var AnnotationReader
 	 */
@@ -70,7 +79,7 @@ class TsVectorSubscriber implements EventSubscriber
 			if (is_null( $annotation ) ) {
 				continue;
 			}
-			$this->checkWatchFields($class,$annotation);
+			$this->checkWatchFields($class, $prop, $annotation);
 			$metaData->mapField([
 				'fieldName' => $prop->getName(),
 				'columnName'=>$this->getColumnName($prop,$annotation),
@@ -103,7 +112,11 @@ class TsVectorSubscriber implements EventSubscriber
 				foreach($fields as $field) {
 					$field = $refl->getProperty($field);
 					$field->setAccessible(true);
-					$tsVectorVal[] = $field->getValue($entity);
+					$fieldValue = $field->getValue($entity);
+					if (is_array($fieldValue)) {
+						$fieldValue = implode(' ', $fieldValue);
+					}
+					$tsVectorVal[] = $fieldValue;
 				}
 				$prop->setAccessible(true);
 				$value = [
@@ -125,7 +138,7 @@ class TsVectorSubscriber implements EventSubscriber
 		return $name;
 	}
 
-	private function checkWatchFields(\ReflectionClass $class, TsVector $annotation)
+	private function checkWatchFields(\ReflectionClass $class, \ReflectionProperty $targetProperty, TsVector $annotation)
 	{
 		foreach ($annotation->fields as $fieldName) {
 			if (!$class->hasProperty($fieldName)) {
@@ -134,8 +147,15 @@ class TsVectorSubscriber implements EventSubscriber
 			$property = $class->getProperty($fieldName);
 			/** @var Column $propAnnot */
 			$propAnnot = $this->reader->getPropertyAnnotation($property, Column::class );
-			if (!in_array($propAnnot->type,['string','text'])) {
-				throw new AnnotationException(sprintf('%s::%s TsVector field can only be assigned to String and Text columns. %s::%s has the type %s',$class->getName(), $fieldName,$class->getName(),$property->getName(),$propAnnot->type));
+			if (!in_array($propAnnot->type, self::$supportedTypes)) {
+				throw new AnnotationException(sprintf(
+					'%s::%s TsVector field can only be assigned to ( "%s" ) columns. %1$s::%s has the type %s',
+					$class->getName(),
+					$targetProperty->getName(),
+					implode('" | "', self::$supportedTypes),
+					$fieldName,
+					$propAnnot->type
+				));
 			}
 		}
 	}
