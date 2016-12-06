@@ -12,9 +12,10 @@ use Doctrine\Common\Annotations\AnnotationException;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\EventSubscriber;
+use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
-use Doctrine\ORM\Event\PreFlushEventArgs;
+use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
@@ -63,7 +64,7 @@ class TsVectorSubscriber implements EventSubscriber
 	{
 		return [
 			Events::loadClassMetadata,
-			Events::preFlush
+			Events::onFlush,
 		];
 	}
 
@@ -91,14 +92,17 @@ class TsVectorSubscriber implements EventSubscriber
 		}
 	}
 
-	public function preFlush(PreFlushEventArgs $eventArgs)
+	public function onFlush(OnFlushEventArgs $eventArgs)
 	{
-		$uow = $eventArgs->getEntityManager()->getUnitOfWork();
+		$em = $eventArgs->getEntityManager();
+		$uow = $em->getUnitOfWork();
 		$insertions = $uow->getScheduledEntityInsertions();
 		$updates = $uow->getScheduledEntityUpdates();
 		$entities = array_merge($insertions, $updates);
 
 		foreach($entities as $entity) {
+			$classMetadata = $em->getClassMetadata(ClassUtils::getClass($entity));
+
 			$refl = new \ReflectionObject($entity);
 			foreach ($refl->getProperties() as $prop) {
 				/** @var TsVector $annot */
@@ -125,6 +129,8 @@ class TsVectorSubscriber implements EventSubscriber
 					'weight'=>$annot->weight
 				];
 				$prop->setValue($entity,$value);
+
+				$uow->recomputeSingleEntityChangeSet($classMetadata, $entity);
 			}
 		}
 	}
