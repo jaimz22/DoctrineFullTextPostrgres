@@ -13,7 +13,7 @@ A simple to use set of database types, and annotations to use postgresql's full 
  * Register Doctrine Type:
  
  ```php
- Type::addType('tsvector',\VertigoLabs\DoctrineFullTextPostgres\DBAL\Types\TsVector::class);
+ Type::addType('tsvector',\VertigoLabs\DoctrineFullTextPostgres\ORM\Mapping\TsVectorType::class);
  ```
  * Register Doctrine Event Subscriber
  
@@ -26,6 +26,25 @@ A simple to use set of database types, and annotations to use postgresql's full 
  $doctrineConfig->addCustomStringFunction('tsquery', \VertigoLabs\DoctrineFullTextPostgres\ORM\Query\AST\Functions\TsQueryFunction::class);
  $doctrineConfig->addCustomStringFunction('tsrank', \VertigoLabs\DoctrineFullTextPostgres\ORM\Query\AST\Functions\TsRankFunction::class);
  $doctrineConfig->addCustomStringFunction('tsrankcd', \VertigoLabs\DoctrineFullTextPostgres\ORM\Query\AST\Functions\TsRankCDFunction::class);
+ ```
+ 
+## Symfony installation
+ 
+ * Add to config
+ 
+ ```yaml
+ doctrine:
+     dbal:
+         types:
+             tsvector:   VertigoLabs\DoctrineFullTextPostgres\DBAL\Types\TsVector
+     orm:
+         entity_managers:
+             default:
+                 dql:
+                     string_functions:
+                         tsquery: VertigoLabs\DoctrineFullTextPostgres\ORM\Query\AST\Functions\TsQueryFunction
+                         tsrank: VertigoLabs\DoctrineFullTextPostgres\ORM\Query\AST\Functions\TsRankFunction
+                         tsrankcd: VertigoLabs\DoctrineFullTextPostgres\ORM\Query\AST\Functions\TsRankCDFunction
  ```
  
 ## Usage
