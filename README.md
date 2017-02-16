@@ -37,6 +37,8 @@ A simple to use set of database types, and annotations to use postgresql's full 
      dbal:
          types:
              tsvector:   VertigoLabs\DoctrineFullTextPostgres\DBAL\Types\TsVector
+        mapping_types:
+             tsvector: tsvector
      orm:
          entity_managers:
              default:
@@ -45,6 +47,12 @@ A simple to use set of database types, and annotations to use postgresql's full 
                          tsquery: VertigoLabs\DoctrineFullTextPostgres\ORM\Query\AST\Functions\TsQueryFunction
                          tsrank: VertigoLabs\DoctrineFullTextPostgres\ORM\Query\AST\Functions\TsRankFunction
                          tsrankcd: VertigoLabs\DoctrineFullTextPostgres\ORM\Query\AST\Functions\TsRankCDFunction
+
+services:
+         vertigolabs.doctrinefulltextpostgres.listener:
+                  class: VertigoLabs\DoctrineFullTextPostgres\Common\TsVectorSubscriber
+                  tags:
+                      - { name: doctrine.event_subscriber, connection: default }                         
  ```
  
 ## Usage
