@@ -37,7 +37,7 @@ A simple to use set of database types, and annotations to use postgresql's full 
      dbal:
          types:
              tsvector:   VertigoLabs\DoctrineFullTextPostgres\DBAL\Types\TsVector
-        mapping_types:
+         mapping_types:
              tsvector: tsvector
      orm:
          entity_managers:
