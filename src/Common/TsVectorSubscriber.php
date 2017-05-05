@@ -15,6 +15,7 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Event\PreFlushEventArgs;
+use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
@@ -63,7 +64,8 @@ class TsVectorSubscriber implements EventSubscriber
 	{
 		return [
 			Events::loadClassMetadata,
-			Events::preFlush
+			Events::preFlush,
+			Events::preUpdate,
 		];
 	}
 
@@ -95,9 +97,17 @@ class TsVectorSubscriber implements EventSubscriber
 	{
 		$uow = $eventArgs->getEntityManager()->getUnitOfWork();
 		$insertions = $uow->getScheduledEntityInsertions();
-		$updates = $uow->getScheduledEntityUpdates();
-		$entities = array_merge($insertions, $updates);
+		$this->setTsVector($insertions);
+	}
 
+	public function preUpdate(PreUpdateEventArgs $eventArgs)
+	{
+		$uow = $eventArgs->getEntityManager()->getUnitOfWork();
+		$updates = $uow->getScheduledEntityUpdates();
+		$this->setTsVector($updates);
+	}
+
+	private function setTsVector($entities) {
 		foreach($entities as $entity) {
 			$refl = new \ReflectionObject($entity);
 			foreach ($refl->getProperties() as $prop) {
