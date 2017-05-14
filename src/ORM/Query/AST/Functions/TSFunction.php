@@ -51,6 +51,11 @@ abstract class TSFunction extends FunctionNode
 		$classMetaData = $class['metadata'];
 		$classRefl = $classMetaData->getReflectionClass();
 		foreach($classRefl->getProperties() as $prop) {
+			if($prop->name == $this->ftsField->field) {
+				$this->ftsField->field = $prop->name;
+				break;
+			}
+
 			/** @var TsVector $annot */
 			$annot = $reader->getPropertyAnnotation($prop, TsVector::class);
 			if (is_null($annot)) {
