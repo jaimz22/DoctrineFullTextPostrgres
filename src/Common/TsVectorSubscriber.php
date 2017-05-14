@@ -12,6 +12,7 @@ use Doctrine\Common\Annotations\AnnotationException;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\EventSubscriber;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Event\PreFlushEventArgs;
@@ -19,6 +20,10 @@ use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\ManyToMany;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\MappingException;
 use VertigoLabs\DoctrineFullTextPostgres\ORM\Mapping\TsVector;
 use \VertigoLabs\DoctrineFullTextPostgres\DBAL\Types\TsVector as TsVectorType;
@@ -122,11 +127,17 @@ class TsVectorSubscriber implements EventSubscriber
 				foreach($fields as $field) {
 					$field = $refl->getProperty($field);
 					$field->setAccessible(true);
+					$test = $field->getName();
 					$fieldValue = $field->getValue($entity);
+
+					if($fieldValue instanceof ArrayCollection) {
+						$fieldValue = $fieldValue->toArray();
+					}					
+
 					if (is_array($fieldValue)) {
 						$fieldValue = implode(' ', $fieldValue);
 					}
-					$tsVectorVal[] = $fieldValue;
+					$tsVectorVal[] = (string) $fieldValue;
 				}
 				$prop->setAccessible(true);
 				$value = [
@@ -155,17 +166,38 @@ class TsVectorSubscriber implements EventSubscriber
 				throw new MappingException(sprintf('Class does not contain %s property',$fieldName));
 			}
 			$property = $class->getProperty($fieldName);
-			/** @var Column $propAnnot */
-			$propAnnot = $this->reader->getPropertyAnnotation($property, Column::class );
-			if (!in_array($propAnnot->type, self::$supportedTypes)) {
-				throw new AnnotationException(sprintf(
-					'%s::%s TsVector field can only be assigned to ( "%s" ) columns. %1$s::%s has the type %s',
-					$class->getName(),
-					$targetProperty->getName(),
-					implode('" | "', self::$supportedTypes),
-					$fieldName,
-					$propAnnot->type
-				));
+			$propAnnotations = $this->reader->getPropertyAnnotations($property);
+
+			foreach($propAnnotations as $annotation) {
+				$type = get_class($annotation);
+				
+				switch($type) {
+					case Column::class:
+						if (!in_array($annotation->type, self::$supportedTypes)) {
+							throw new AnnotationException(sprintf(
+								'%s::%s TsVector field can only be assigned to ( "%s" ) columns. %1$s::%s has the type %s',
+								$class->getName(),
+								$targetProperty->getName(),
+								implode('" | "', self::$supportedTypes),
+								$fieldName,
+								$annotation->type
+							));
+						}
+						break;
+					case ManyToMany::class:
+					case ManyToOne::class:
+					case OneToMany::class:
+					case OneToOne::class:
+						$rc = new \ReflectionClass($annotation->targetEntity);
+						if(!$rc->hasMethod('__toString')) {
+							throw new AnnotationException(sprintf(
+								'%s::%s TsVector field assigned to ( "%s" ) which does not implement __toString',
+								$class->getName(),
+								$targetProperty->getName(),
+								$annotation->targetEntity
+							));
+						}
+				}
 			}
 		}
 	}
@@ -176,7 +208,7 @@ class TsVectorSubscriber implements EventSubscriber
 			$property = $class->getProperty($fieldName);
 			/** @var Column $propAnnot */
 			$propAnnot = $this->reader->getPropertyAnnotation($property, Column::class );
-			if ($propAnnot->nullable === false) {
+			if ($propAnnot && $propAnnot->nullable === false) {
 				return false;
 			}
 		}
