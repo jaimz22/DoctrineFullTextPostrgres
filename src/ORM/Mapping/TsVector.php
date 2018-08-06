@@ -12,29 +12,29 @@ use Doctrine\Common\Annotations\Annotation;
 use Doctrine\Common\Annotations\Annotation\Target;
 
 /**
- * Class TsVector
- * @package VertigoLabs\DoctrineFullTextPostgres\ORM\Mapping
+ * Class TsVector.
+ *
  * @Annotation
  * @Target("PROPERTY")
  */
 final class TsVector extends Annotation
 {
-	/**
-	 * @var array<string>
-	 * @Annotation\Required()
-	 */
-	public $fields = [];
-	/**
-	 * @var string
-	 */
-	public $name;
-	/**
-	 * @var string
-	 * @Annotation\Enum({'A',"B","C","D"})
-	 */
-	public $weight = 'D';
-	/**
-	 * @var string
-	 */
-	public $language = 'english';
+    /**
+     * @var array<string>
+     * @Annotation\Required()
+     */
+    public $fields = [];
+    /**
+     * @var string
+     */
+    public $name;
+    /**
+     * @var string
+     * @Annotation\Enum({'A',"B","C","D"})
+     */
+    public $weight = 'D';
+    /**
+     * @var string
+     */
+    public $language = 'english';
 }
