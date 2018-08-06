@@ -88,7 +88,6 @@ class TsVectorSubscriber implements EventSubscriber
 				'type'=>'tsvector',
 				'weight'=> strtoupper($annotation->weight),
 				'language' => strtolower($annotation->language),
-				'nullable' => $this->isWatchFieldNullable($class, $annotation)
 			]);
 		}
 	}
@@ -120,13 +119,24 @@ class TsVectorSubscriber implements EventSubscriber
 				$fields = $annot->fields;
 				$tsVectorVal = [];
 				foreach($fields as $field) {
-					$field = $refl->getProperty($field);
-					$field->setAccessible(true);
-					$fieldValue = $field->getValue($entity);
-					if (is_array($fieldValue)) {
-						$fieldValue = implode(' ', $fieldValue);
+					if ($refl->hasMethod($field)) {
+						$method = $refl->getMethod($field);
+						$method->setAccessible(true);
+						$methodValue = $method->invoke($entity);
+						if (is_array($methodValue)) {
+							$methodValue = implode(' ', $methodValue);
+						}
+						$tsVectorVal[] = $methodValue;
 					}
-					$tsVectorVal[] = $fieldValue;
+					if ($refl->hasProperty($field)) {
+						$field = $refl->getProperty($field);
+						$field->setAccessible(true);
+						$fieldValue = $field->getValue($entity);
+						if (is_array($fieldValue)) {
+							$fieldValue = implode(' ', $fieldValue);
+						}
+						$tsVectorVal[] = $fieldValue;
+					}
 				}
 				$prop->setAccessible(true);
 				$value = [
@@ -151,9 +161,14 @@ class TsVectorSubscriber implements EventSubscriber
 	private function checkWatchFields(\ReflectionClass $class, \ReflectionProperty $targetProperty, TsVector $annotation)
 	{
 		foreach ($annotation->fields as $fieldName) {
-			if (!$class->hasProperty($fieldName)) {
-				throw new MappingException(sprintf('Class does not contain %s property',$fieldName));
+			if ($class->hasMethod($fieldName)) {
+				continue;
 			}
+
+			if (!$class->hasProperty($fieldName)) {
+				throw new MappingException(sprintf('Class does not contain %s property or getter',$fieldName));
+			}
+
 			$property = $class->getProperty($fieldName);
 			/** @var Column $propAnnot */
 			$propAnnot = $this->reader->getPropertyAnnotation($property, Column::class );

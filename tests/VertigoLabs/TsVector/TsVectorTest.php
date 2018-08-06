@@ -96,6 +96,14 @@ class TsVectorTest extends BaseORMTestCase
 	}
 
 	/**
+     * @test
+     */
+    public function mustHaveGetter()
+    {
+        $metaData = $this->em->getClassMetadata(GetterEntity::class);
+    }
+
+	/**
 	 * @test
 	 */
 	public function shouldCreateSchema()
