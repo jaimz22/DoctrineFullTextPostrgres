@@ -15,6 +15,7 @@ use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Tools\Setup;
 use VertigoLabs\DoctrineFullTextPostgres\Common\TsVectorSubscriber;
 use VertigoLabs\DoctrineFullTextPostgres\ORM\Query\AST\Functions\TsQueryFunction;
+use VertigoLabs\DoctrineFullTextPostgres\ORM\Query\AST\Functions\TsPlainQueryFunction;
 use VertigoLabs\DoctrineFullTextPostgres\ORM\Query\AST\Functions\TsRankCDFunction;
 use VertigoLabs\DoctrineFullTextPostgres\ORM\Query\AST\Functions\TsRankFunction;
 
@@ -45,6 +46,7 @@ class BaseORMTestCase extends \PHPUnit_Framework_TestCase
 			__DIR__.'../TsVector/Fixture'
 		],$isDevMode);
 		$doctrineConfig->addCustomStringFunction('tsquery', TsQueryFunction::class);
+		$doctrineConfig->addCustomStringFunction('tsplainquery', TsPlainQueryFunction::class);
 		$doctrineConfig->addCustomStringFunction('tsrank', TsRankFunction::class);
 		$doctrineConfig->addCustomStringFunction('tsrankcd', TsRankCDFunction::class);
 

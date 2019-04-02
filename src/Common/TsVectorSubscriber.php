@@ -20,166 +20,184 @@ use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\MappingException;
+use VertigoLabs\DoctrineFullTextPostgres\DBAL\Types\TsVector as TsVectorType;
 use VertigoLabs\DoctrineFullTextPostgres\ORM\Mapping\TsVector;
-use \VertigoLabs\DoctrineFullTextPostgres\DBAL\Types\TsVector as TsVectorType;
 
 /**
- * Class TsVectorSubscriber
- * @package VertigoLabs\DoctrineFullTextPostgres\Common
+ * Class TsVectorSubscriber.
  */
 class TsVectorSubscriber implements EventSubscriber
 {
-	const ANNOTATION_NS = 'VertigoLabs\\DoctrineFullTextPostgres\\ORM\\Mapping\\';
-	const ANNOTATION_TSVECTOR = 'TsVector';
+    const ANNOTATION_NS = 'VertigoLabs\\DoctrineFullTextPostgres\\ORM\\Mapping\\';
+    const ANNOTATION_TSVECTOR = 'TsVector';
 
-	private static $supportedTypes = [
-		'string',
-		'text',
-		'array',
-		'simple_array',
-		'json',
-		'json_array',
-	];
+    private static $supportedTypes = [
+        'string',
+        'text',
+        'array',
+        'simple_array',
+        'json',
+        'json_array',
+    ];
 
-	/**
-	 * @var AnnotationReader
-	 */
-	private $reader;
+    /**
+     * @var AnnotationReader
+     */
+    private $reader;
 
-	public function __construct()
-	{
-		AnnotationRegistry::registerAutoloadNamespace(self::ANNOTATION_NS);
-		$this->reader = new AnnotationReader();
+    public function __construct()
+    {
+        AnnotationRegistry::registerAutoloadNamespace(self::ANNOTATION_NS);
+        $this->reader = new AnnotationReader();
 
-		if (!Type::hasType(strtolower(self::ANNOTATION_TSVECTOR))) {
-			Type::addType(strtolower(self::ANNOTATION_TSVECTOR),TsVectorType::class);
-		}
-	}
-	/**
-	 * Returns an array of events this subscriber wants to listen to.
-	 *
-	 * @return array
-	 */
-	public function getSubscribedEvents()
-	{
-		return [
-			Events::loadClassMetadata,
-			Events::preFlush,
-			Events::preUpdate,
-		];
-	}
+        if (!Type::hasType(strtolower(self::ANNOTATION_TSVECTOR))) {
+            Type::addType(strtolower(self::ANNOTATION_TSVECTOR), TsVectorType::class);
+        }
+    }
 
-	public function loadClassMetadata(LoadClassMetadataEventArgs $eventArgs)
-	{
-		/** @var ClassMetadata $metaData */
-		$metaData = $eventArgs->getClassMetadata();
+    /**
+     * Returns an array of events this subscriber wants to listen to.
+     *
+     * @return array
+     */
+    public function getSubscribedEvents()
+    {
+        return [
+            Events::loadClassMetadata,
+            Events::preFlush,
+            Events::preUpdate,
+        ];
+    }
 
-		$class = $metaData->getReflectionClass();
-		foreach($class->getProperties() as $prop) {
-			/** @var TsVector $annotation */
-			$annotation = $this->reader->getPropertyAnnotation($prop, self::ANNOTATION_NS . self::ANNOTATION_TSVECTOR );
-			if (is_null( $annotation ) ) {
-				continue;
-			}
-			$this->checkWatchFields($class, $prop, $annotation);
-			$metaData->mapField([
-				'fieldName' => $prop->getName(),
-				'columnName'=>$this->getColumnName($prop,$annotation),
-				'type'=>'tsvector',
-				'weight'=> strtoupper($annotation->weight),
-				'language' => strtolower($annotation->language),
-				'nullable' => $this->isWatchFieldNullable($class, $annotation)
-			]);
-		}
-	}
+    public function loadClassMetadata(LoadClassMetadataEventArgs $eventArgs)
+    {
+        /** @var ClassMetadata $metaData */
+        $metaData = $eventArgs->getClassMetadata();
 
-	public function preFlush(PreFlushEventArgs $eventArgs)
-	{
-		$uow = $eventArgs->getEntityManager()->getUnitOfWork();
-		$insertions = $uow->getScheduledEntityInsertions();
-		$this->setTsVector($insertions);
-	}
+        $class = $metaData->getReflectionClass();
+        foreach ($class->getProperties() as $prop) {
+            /** @var TsVector $annotation */
+            $annotation = $this->reader->getPropertyAnnotation($prop, self::ANNOTATION_NS.self::ANNOTATION_TSVECTOR);
+            if (null === $annotation) {
+                continue;
+            }
+            $this->checkWatchFields($class, $prop, $annotation);
+            $metaData->mapField([
+                'fieldName' => $prop->getName(),
+                'columnName' => $this->getColumnName($prop, $annotation),
+                'type' => 'tsvector',
+                'weight' => strtoupper($annotation->weight),
+                'language' => strtolower($annotation->language),
+            ]);
+        }
+    }
 
-	public function preUpdate(PreUpdateEventArgs $eventArgs)
-	{
-		$uow = $eventArgs->getEntityManager()->getUnitOfWork();
-		$updates = $uow->getScheduledEntityUpdates();
-		$this->setTsVector($updates);
-	}
+    public function preFlush(PreFlushEventArgs $eventArgs)
+    {
+        $uow = $eventArgs->getEntityManager()->getUnitOfWork();
+        $insertions = $uow->getScheduledEntityInsertions();
+        $this->setTsVector($insertions);
+    }
 
-	private function setTsVector($entities) {
-		foreach($entities as $entity) {
-			$refl = new \ReflectionObject($entity);
-			foreach ($refl->getProperties() as $prop) {
-				/** @var TsVector $annot */
-				$annot = $this->reader->getPropertyAnnotation($prop, TsVector::class);
-				if (is_null($annot)) {
-					continue;
-				}
+    public function preUpdate(PreUpdateEventArgs $eventArgs)
+    {
+        $uow = $eventArgs->getEntityManager()->getUnitOfWork();
+        $updates = $uow->getScheduledEntityUpdates();
+        $this->setTsVector($updates);
+    }
 
-				$fields = $annot->fields;
-				$tsVectorVal = [];
-				foreach($fields as $field) {
-					$field = $refl->getProperty($field);
-					$field->setAccessible(true);
-					$fieldValue = $field->getValue($entity);
-					if (is_array($fieldValue)) {
-						$fieldValue = implode(' ', $fieldValue);
-					}
-					$tsVectorVal[] = $fieldValue;
-				}
-				$prop->setAccessible(true);
-				$value = [
-					'data'=>join(' ',$tsVectorVal),
-					'language'=>$annot->language,
-					'weight'=>$annot->weight
-				];
-				$prop->setValue($entity,$value);
-			}
-		}
-	}
+    private function setTsVector($entities)
+    {
+        foreach ($entities as $entity) {
+            $refl = new \ReflectionObject($entity);
+            foreach ($refl->getProperties() as $prop) {
+                /** @var TsVector $annot */
+                $annot = $this->reader->getPropertyAnnotation($prop, TsVector::class);
+                if (null === $annot) {
+                    continue;
+                }
 
-	private function getColumnName(\ReflectionProperty $property, TsVector $annotation)
-	{
-		$name = $annotation->name;
-		if (is_null($name)) {
-			$name = $property->getName();
-		}
-		return $name;
-	}
+                $fields = $annot->fields;
+                $tsVectorVal = [];
+                foreach ($fields as $field) {
+                    if ($refl->hasMethod($field)) {
+                        $method = $refl->getMethod($field);
+                        $method->setAccessible(true);
+                        $methodValue = $method->invoke($entity);
+                        if (is_array($methodValue)) {
+                            $methodValue = implode(' ', $methodValue);
+                        }
+                        $tsVectorVal[] = $methodValue;
+                    }
+                    if ($refl->hasProperty($field)) {
+                        $field = $refl->getProperty($field);
+                        $field->setAccessible(true);
+                        $fieldValue = $field->getValue($entity);
+                        if (is_array($fieldValue)) {
+                            $fieldValue = implode(' ', $fieldValue);
+                        }
+                        $tsVectorVal[] = $fieldValue;
+                    }
+                }
+                $prop->setAccessible(true);
+                $value = [
+                    'data' => join(' ', $tsVectorVal),
+                    'language' => $annot->language,
+                    'weight' => $annot->weight,
+                ];
+                $prop->setValue($entity, $value);
+            }
+        }
+    }
 
-	private function checkWatchFields(\ReflectionClass $class, \ReflectionProperty $targetProperty, TsVector $annotation)
-	{
-		foreach ($annotation->fields as $fieldName) {
-			if (!$class->hasProperty($fieldName)) {
-				throw new MappingException(sprintf('Class does not contain %s property',$fieldName));
-			}
-			$property = $class->getProperty($fieldName);
-			/** @var Column $propAnnot */
-			$propAnnot = $this->reader->getPropertyAnnotation($property, Column::class );
-			if (!in_array($propAnnot->type, self::$supportedTypes)) {
-				throw new AnnotationException(sprintf(
-					'%s::%s TsVector field can only be assigned to ( "%s" ) columns. %1$s::%s has the type %s',
-					$class->getName(),
-					$targetProperty->getName(),
-					implode('" | "', self::$supportedTypes),
-					$fieldName,
-					$propAnnot->type
-				));
-			}
-		}
-	}
+    private function getColumnName(\ReflectionProperty $property, TsVector $annotation)
+    {
+        $name = $annotation->name;
+        if (null === $name) {
+            $name = $property->getName();
+        }
 
-	private function isWatchFieldNullable(\ReflectionClass $class, TsVector $annotation)
-	{
-		foreach ($annotation->fields as $fieldName) {
-			$property = $class->getProperty($fieldName);
-			/** @var Column $propAnnot */
-			$propAnnot = $this->reader->getPropertyAnnotation($property, Column::class );
-			if ($propAnnot->nullable === false) {
-				return false;
-			}
-		}
-		return true;
-	}
+        return $name;
+    }
+
+    private function checkWatchFields(\ReflectionClass $class, \ReflectionProperty $targetProperty, TsVector $annotation)
+    {
+        foreach ($annotation->fields as $fieldName) {
+            if ($class->hasMethod($fieldName)) {
+                continue;
+            }
+
+            if (!$class->hasProperty($fieldName)) {
+                throw new MappingException(sprintf('Class does not contain %s property or getter', $fieldName));
+            }
+
+            $property = $class->getProperty($fieldName);
+            /** @var Column $propAnnot */
+            $propAnnot = $this->reader->getPropertyAnnotation($property, Column::class);
+            if (!in_array($propAnnot->type, self::$supportedTypes)) {
+                throw new AnnotationException(sprintf(
+                    '%s::%s TsVector field can only be assigned to ( "%s" ) columns. %1$s::%s has the type %s',
+                    $class->getName(),
+                    $targetProperty->getName(),
+                    implode('" | "', self::$supportedTypes),
+                    $fieldName,
+                    $propAnnot->type
+                ));
+            }
+        }
+    }
+
+    private function isWatchFieldNullable(\ReflectionClass $class, TsVector $annotation)
+    {
+        foreach ($annotation->fields as $fieldName) {
+            $property = $class->getProperty($fieldName);
+            /** @var Column $propAnnot */
+            $propAnnot = $this->reader->getPropertyAnnotation($property, Column::class);
+            if (false === $propAnnot->nullable) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

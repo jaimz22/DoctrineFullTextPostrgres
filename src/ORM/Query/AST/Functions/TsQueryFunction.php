@@ -11,14 +11,14 @@ namespace VertigoLabs\DoctrineFullTextPostgres\ORM\Query\AST\Functions;
 use Doctrine\ORM\Query\SqlWalker;
 
 /**
- * Class TsQueryFunction
- * @package VertigoLabs\DoctrineFullTextPostgres\ORM\Query\AST\Functions
+ * Class TsQueryFunction.
  */
 class TsQueryFunction extends TSFunction
 {
-	public function getSql(SqlWalker $sqlWalker)
-	{
-		$this->findFTSField($sqlWalker);
-		return $this->ftsField->dispatch($sqlWalker).' @@ to_tsquery('.$this->queryString->dispatch($sqlWalker).')';
-	}
+    public function getSql(SqlWalker $sqlWalker)
+    {
+        $this->findFTSField($sqlWalker);
+
+        return $this->ftsField->dispatch($sqlWalker).' @@ to_tsquery('.$this->queryString->dispatch($sqlWalker).')';
+    }
 }
