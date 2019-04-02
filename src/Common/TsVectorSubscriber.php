@@ -88,6 +88,7 @@ class TsVectorSubscriber implements EventSubscriber
                 'type' => 'tsvector',
                 'weight' => strtoupper($annotation->weight),
                 'language' => strtolower($annotation->language),
+                'nullable' => $this->isWatchFieldNullable($class, $annotation)
             ]);
         }
     }
