@@ -65,6 +65,9 @@ services:
  You do not need to set data for your TsVector field, the data will come from the fields specified in the ```fields``` property automatically when the object is flushed to the database
 
   ```php
+  
+  use VertigoLabs\DoctrineFullTextPostgres\ORM\Mapping\TsVector;
+
   class Article
   {
       /**
