@@ -30,7 +30,7 @@ final class TsVector extends Annotation
     public $name;
     /**
      * @var string
-     * @Annotation\Enum({'A',"B","C","D"})
+     * @Annotation\Enum({"A","B","C","D"})
      */
     public $weight = 'D';
     /**
