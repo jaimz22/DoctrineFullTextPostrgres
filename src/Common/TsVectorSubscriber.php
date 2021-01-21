@@ -191,6 +191,10 @@ class TsVectorSubscriber implements EventSubscriber
     private function isWatchFieldNullable(\ReflectionClass $class, TsVector $annotation)
     {
         foreach ($annotation->fields as $fieldName) {
+            if ($class->hasMethod($fieldName)) {
+                continue;
+            }
+
             $property = $class->getProperty($fieldName);
             /** @var Column $propAnnot */
             $propAnnot = $this->reader->getPropertyAnnotation($property, Column::class);
