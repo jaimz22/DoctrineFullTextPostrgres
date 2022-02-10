@@ -61,10 +61,10 @@ class TsVector extends Type
      */
     public function convertToDatabaseValueSQL($sqlExp, AbstractPlatform $platform): string
     {
-        return sprintf("to_tsvector('english', ?)", $sqlExp);
+        return sprintf("to_tsvector('english', %s)", $sqlExp);
     }
 
-    public function convertToDatabaseValue($value, AbstractPlatform $platform): mixed
+    public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
         return $value['data'];
     }

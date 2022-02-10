@@ -19,7 +19,7 @@ use VertigoLabs\DoctrineFullTextPostgres\ORM\Query\AST\Functions\TsPlainQueryFun
 use VertigoLabs\DoctrineFullTextPostgres\ORM\Query\AST\Functions\TsRankCDFunction;
 use VertigoLabs\DoctrineFullTextPostgres\ORM\Query\AST\Functions\TsRankFunction;
 
-class BaseORMTestCase extends \PHPUnit_Framework_TestCase
+class BaseORMTestCase extends \PHPUnit\Framework\TestCase
 {
 	/**
 	 * @var EntityManager
@@ -52,7 +52,8 @@ class BaseORMTestCase extends \PHPUnit_Framework_TestCase
 
 		$dbConfig = [
 			'host'=>'localhost',
-			'user'=>'postgres',
+			'user'=>'main',
+			'password'=>'main',
 			'dbname' => 'ts_vector_test',
 			'driver' => 'pdo_pgsql'
 		];

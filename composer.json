@@ -11,13 +11,13 @@
     "type": "library",
     "require": {
         "doctrine/orm": "^2.10",
-        "php": ">=7.4"
+        "php": ">=7.4",
         "rector/rector": "0.12.x-dev"
     },
     "require-dev": {
         "doctrine/annotations": "^1.13.2",
-        "phpunit/phpunit": "^5.0",
-        "phpunit/phpunit-mock-objects": "^3.0",
+        "phpunit/phpunit": "^6.0",
+        "phpunit/phpunit-mock-objects": "^5.0",
         "symfony/cache": "^5.4"
     },
     "autoload": {

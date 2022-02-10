@@ -6,9 +6,9 @@
         convertNoticesToExecptions="true"
         convertWarningsToExeceptions="true"
         processIsolation="false"
-        stopOnFailure="false"
+        stopOnFailure="true"
         syntaxCheck="false"
-        bootstrap="./bootstrap.php">
+        bootstrap="./tests/bootstrap.php">
     <testsuites>
         <testsuite name="TsVector Extension">
             <directory suffix="Test.php">./VertigoLabs/TsVector</directory>
