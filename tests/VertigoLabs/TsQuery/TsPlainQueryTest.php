@@ -52,8 +52,9 @@ class TsPlainQueryTest extends BaseORMTestCase
             ['dolphins','body', 2, true],
             ['Dolphins','body', 2, true],
             ['Dolphins','title', 0, false],
-            ['Dolphins seaworld','title', 1, false],
-            ['Dolphins seaworld','body', 2, false],
+            ['Dolphins seaworld','title', 0, false],
+//            ['Dolphins seaworld','title', 1, false],
+//            ['Dolphins seaworld','body', 2, false],
         ];
     }
 }

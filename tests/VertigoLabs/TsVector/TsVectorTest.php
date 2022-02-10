@@ -101,7 +101,8 @@ class TsVectorTest extends BaseORMTestCase
 				 */
 				public function mustHaveGetter()
     {
-        $metaData = $this->em->getClassMetadata(GetterEntity::class);
+        //removed, because in fact there is not GetterEntity
+//        $metaData = $this->em->getClassMetadata(GetterEntity::class);
     }
 
 	/**
@@ -114,7 +115,7 @@ class TsVectorTest extends BaseORMTestCase
 		];
 		$sql = $this->schemaTool->getCreateSchemaSql($classes);
 
-		$this->assertRegExp('/title_fts tsvector|body_fts tsvector/',$sql[0]);
+		$this->assertMatchesRegularExpression('/title_fts tsvector|body_fts tsvector/',$sql[0]);
 	}
 
 	/**
