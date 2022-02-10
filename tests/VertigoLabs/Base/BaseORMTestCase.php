@@ -32,7 +32,7 @@ class BaseORMTestCase extends \PHPUnit\Framework\TestCase
 
 	protected $createdSchemas = [];
 
-	public function setUp()
+	public function setUp(): void
 	{
 		$this->setUpDatabase();
 		$this->setUpListeners();
@@ -79,7 +79,7 @@ class BaseORMTestCase extends \PHPUnit\Framework\TestCase
 		$this->em->getEventManager()->addEventSubscriber(new TsVectorSubscriber());
 	}
 
-	public function tearDown()
+	public function tearDown(): void
 	{
 		if (count($this->createdSchemas) > 0) {
 			$this->dropSchemas($this->createdSchemas);

@@ -2,12 +2,8 @@
 <phpunit backupGlobals="false"
         backupStaticAttributes="false"
         colors="true"
-        convertErrorsToExections="true"
-        convertNoticesToExecptions="true"
-        convertWarningsToExeceptions="true"
         processIsolation="false"
         stopOnFailure="true"
-        syntaxCheck="false"
         bootstrap="./tests/bootstrap.php">
     <testsuites>
         <testsuite name="TsVector Extension">

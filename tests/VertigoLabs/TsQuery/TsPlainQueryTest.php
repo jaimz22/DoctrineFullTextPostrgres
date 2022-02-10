@@ -7,7 +7,7 @@ use TsVector\Fixture\Article;
 
 class TsPlainQueryTest extends BaseORMTestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->setUpSchema([Article::class]);

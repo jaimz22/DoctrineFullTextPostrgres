@@ -20,7 +20,7 @@ use TsVector\Fixture\WrongColumnTypeEntity;
 
 class TsVectorTest extends BaseORMTestCase
 {
-	public function setUp()
+	public function setUp(): void
 	{
 		parent::setUp();
 

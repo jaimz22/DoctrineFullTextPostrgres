@@ -16,8 +16,8 @@
     },
     "require-dev": {
         "doctrine/annotations": "^1.13.2",
-        "phpunit/phpunit": "^6.0",
-        "phpunit/phpunit-mock-objects": "^5.0",
+        "phpunit/phpunit": "^9.5",
+        "phpunit/phpunit-mock-objects": "*",
         "symfony/cache": "^5.4"
     },
     "autoload": {
