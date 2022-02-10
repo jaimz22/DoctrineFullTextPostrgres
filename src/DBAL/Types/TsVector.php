@@ -31,7 +31,7 @@ class TsVector extends Type
         return 'tsvector';
     }
 
-    public function canRequireSQLConversion()
+    public function canRequireSQLConversion(): bool
     {
         return true;
     }
@@ -59,12 +59,12 @@ class TsVector extends Type
      *
      * @return mixed the database representation of the value
      */
-    public function convertToDatabaseValueSQL($sqlExp, AbstractPlatform $platform)
+    public function convertToDatabaseValueSQL($sqlExp, AbstractPlatform $platform): string
     {
         return sprintf("to_tsvector('english', ?)", $sqlExp);
     }
 
-    public function convertToDatabaseValue($value, AbstractPlatform $platform)
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): mixed
     {
         return $value['data'];
     }
