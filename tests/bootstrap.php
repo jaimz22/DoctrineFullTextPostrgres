@@ -9,10 +9,6 @@ define('TESTS_PATH',__DIR__);
 define('TESTS_TEMP_PATH',__DIR__.'/temp');
 define('VENDOR_PATH',__DIR__.'../vendor');
 
-if (!class_exists(\PHPUnit\Framework\TestCase::class) || version_compare(\PHPUnit\Runner\Version::id(), '3.5') < 0) {
-	die('PHPUnit framework 3.5 or newer is required');
-}
-
 if (!class_exists(\PHPUnit\Framework\MockObject\MockBuilder::class)) {
 	die('PHPUnit MockObject Plugin 1.0.8 or newer is required');
 }

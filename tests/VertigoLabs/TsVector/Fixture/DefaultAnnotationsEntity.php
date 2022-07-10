@@ -21,16 +21,14 @@ use VertigoLabs\DoctrineFullTextPostgres\ORM\Mapping\TsVector;
 class DefaultAnnotationsEntity
 {
 	/**
-	 * @var integer
-	 * @Id()
-	 * @Column(name="id", type="integer", nullable=false)
-	 */
-	private $id;
+  * @Id()
+  * @Column(name="id", type="integer", nullable=false)
+  */
+ private int $id;
 	/**
-	 * @var string
-	 * @Column(type="string", nullable=true)
-	 */
-	private $allDefaults;
+  * @Column(type="string", nullable=true)
+  */
+ private string $allDefaults;
 	/**
 	 * @TsVector(fields={"allDefaults"})
 	 */

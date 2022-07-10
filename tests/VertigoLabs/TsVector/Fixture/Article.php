@@ -24,35 +24,30 @@ use VertigoLabs\DoctrineFullTextPostgres\ORM\Mapping\TsVector;
 class Article
 {
 	/**
-	 * @var integer
-	 * @Id()
-	 * @GeneratedValue(strategy="IDENTITY")
-	 * @Column(name="id", type="integer", nullable=false)
-	 */
-	private $id;
+  * @Id()
+  * @GeneratedValue(strategy="IDENTITY")
+  * @Column(name="id", type="integer", nullable=false)
+  */
+ private int $id;
 
 	/**
-	 * @var string
-	 * @Column(name="title", type="string", nullable=false)
-	 */
-	private $title;
+  * @Column(name="title", type="string", nullable=false)
+  */
+ private string $title;
 
 	/**
-	 * @var \VertigoLabs\DoctrineFullTextPostgres\DBAL\Types\TsVector
-	 * @TsVector(name="title_fts", fields={"title"}, weight="A")
-	 */
-	private $titleFTS;
+  * @TsVector(name="title_fts", fields={"title"}, weight="A")
+  */
+ private \VertigoLabs\DoctrineFullTextPostgres\DBAL\Types\TsVector $titleFTS;
 	/**
-	 * @var string
-	 * @Column(name="body", type="text", nullable=true)
-	 */
-	private $body;
+  * @Column(name="body", type="text", nullable=true)
+  */
+ private string $body;
 
 	/**
-	 * @var \VertigoLabs\DoctrineFullTextPostgres\DBAL\Types\TsVector
-	 * @TsVector(name="body_fts", fields={"body"})
-	 */
-	private $bodyFTS;
+  * @TsVector(name="body_fts", fields={"body"})
+  */
+ private \VertigoLabs\DoctrineFullTextPostgres\DBAL\Types\TsVector $bodyFTS;
 
 	/**
 	 * @return string
