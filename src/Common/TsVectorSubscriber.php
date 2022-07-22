@@ -91,7 +91,7 @@ class TsVectorSubscriber implements EventSubscriber
                 'type' => 'tsvector',
                 'weight' => strtoupper($attribute->weight),
                 'language' => strtolower($attribute->language),
-                'nullable' => $this->isWatchFieldNullable($class, $attribute)
+                'nullable' => true, // pre-populating $this->isWatchFieldNullable($class, $attribute)
             ]);
 
                     }
