@@ -8,8 +8,7 @@
 
 namespace VertigoLabs\DoctrineFullTextPostgres\ORM\Query\AST\Functions;
 
-use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\AST\Functions\FunctionNode;
 use Doctrine\ORM\Query\AST\PathExpression;
 use Doctrine\ORM\Query\Lexer;
@@ -43,7 +42,6 @@ abstract class TSFunction extends FunctionNode
 
     protected function findFTSField(SqlWalker $sqlWalker)
     {
-        $reader = new AnnotationReader();
         $dqlAlias = $this->ftsField->identificationVariable;
         $class = $sqlWalker->getQueryComponent($dqlAlias);
         /** @var ClassMetadata $classMetaData */
@@ -51,10 +49,7 @@ abstract class TSFunction extends FunctionNode
         $classRefl = $classMetaData->getReflectionClass();
         foreach ($classRefl->getProperties() as $prop) {
             /** @var TsVector $annot */
-            $annot = $reader->getPropertyAnnotation($prop, TsVector::class);
-            if (null === $annot) {
-                continue;
-            }
+            dd($prop);
             if (in_array($this->ftsField->field, $annot->fields)) {
                 $this->ftsField->field = $prop->name;
                 break;

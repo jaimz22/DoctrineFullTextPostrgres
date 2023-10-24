@@ -8,19 +8,16 @@
 
 namespace VertigoLabs\DoctrineFullTextPostgres\ORM\Mapping;
 
-use Doctrine\ORM\Mapping\Annotation;
-use Doctrine\Common\Annotations\Annotation\Target;
-use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
+//use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 use \Attribute;
+use Doctrine\ORM\Mapping\MappingAttribute;
+
 /**
  * Class TsVector.
  *
- * @Annotation
- * @NamedArgumentConstructor()
- * @Target("PROPERTY")
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class TsVector implements Annotation
+final class TsVector implements MappingAttribute
 {
     public function __construct(public string $name, public array $fields=[], public string $weight='D', public string $language = 'english')
     {

@@ -1,0 +1,9 @@
+parameters:
+    level: 0
+#    inferPrivatePropertyTypeFromConstructor: true
+    paths:
+        - ./src
+    excludePaths:
+      - 'src/Resources/skeleton'
+      - */cache/*
+
