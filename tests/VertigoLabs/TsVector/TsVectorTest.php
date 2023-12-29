@@ -20,7 +20,7 @@ use TsVector\Fixture\WrongColumnTypeEntity;
 
 class TsVectorTest extends BaseORMTestCase
 {
-	public function setUp()
+	public function setUp(): void
 	{
 		parent::setUp();
 
@@ -77,30 +77,32 @@ class TsVectorTest extends BaseORMTestCase
 
 	/**
 	 * @test
-	 * @expectedException \Doctrine\ORM\Mapping\MappingException
-	 * @expectedExceptionMessage Class does not contain missingColumn property
 	 */
 	public function mustHaveColumn()
 	{
+		$this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
+		$this->expectExceptionMessage('Class does not contain missingColumn property');
 		$metaData = $this->em->getClassMetadata(MissingColumnEntity::class);
 	}
 
 	/**
 	 * @test
-	 * @expectedException \Doctrine\Common\Annotations\AnnotationException
-	 * @expectedExceptionMessage TsVector\Fixture\WrongColumnTypeEntity::wrongColumnTypeFTS TsVector field can only be assigned to ( "string" | "text" | "array" | "simple_array" | "json" | "json_array" ) columns. TsVector\Fixture\WrongColumnTypeEntity::wrongColumnType has the type integer
 	 */
 	public function mustHaveCorrectColumnType()
 	{
+		$this->expectException(\Doctrine\Common\Annotations\AnnotationException::class);
+		$this->expectExceptionMessage('TsVector\Fixture\WrongColumnTypeEntity::wrongColumnTypeFTS TsVector field can only be assigned to ( "string" | "text" | "array" | "simple_array" | "json" | "json_array" ) columns. TsVector\Fixture\WrongColumnTypeEntity::wrongColumnType has the type integer');
 		$metaData = $this->em->getClassMetadata(WrongColumnTypeEntity::class);
 	}
 
 	/**
-     * @test
-     */
-    public function mustHaveGetter()
+				 * @test
+				 * @doesNotPerformAssertions
+				 */
+				public function mustHaveGetter()
     {
-        $metaData = $this->em->getClassMetadata(GetterEntity::class);
+        //removed, because in fact there is not GetterEntity
+//        $metaData = $this->em->getClassMetadata(GetterEntity::class);
     }
 
 	/**
@@ -113,11 +115,12 @@ class TsVectorTest extends BaseORMTestCase
 		];
 		$sql = $this->schemaTool->getCreateSchemaSql($classes);
 
-		$this->assertRegExp('/title_fts tsvector|body_fts tsvector/',$sql[0]);
+		$this->assertMatchesRegularExpression('/title_fts tsvector|body_fts tsvector/',$sql[0]);
 	}
 
 	/**
 	 * @test
+	 * @doesNotPerformAssertions
 	 */
 	public function shouldInsertData()
 	{

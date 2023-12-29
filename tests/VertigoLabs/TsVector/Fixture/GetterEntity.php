@@ -21,11 +21,10 @@ use VertigoLabs\DoctrineFullTextPostgres\ORM\Mapping\TsVector;
 class GetterEntity
 {
     /**
-     * @var integer
      * @Id()
      * @Column(name="id", type="integer", nullable=false)
      */
-    private $id;
+    private int $id;
 
     /**
      * @TsVector(fields={"calculateColumn"})

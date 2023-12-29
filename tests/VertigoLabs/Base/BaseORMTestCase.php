@@ -19,7 +19,7 @@ use VertigoLabs\DoctrineFullTextPostgres\ORM\Query\AST\Functions\TsPlainQueryFun
 use VertigoLabs\DoctrineFullTextPostgres\ORM\Query\AST\Functions\TsRankCDFunction;
 use VertigoLabs\DoctrineFullTextPostgres\ORM\Query\AST\Functions\TsRankFunction;
 
-class BaseORMTestCase extends \PHPUnit_Framework_TestCase
+class BaseORMTestCase extends \PHPUnit\Framework\TestCase
 {
 	/**
 	 * @var EntityManager
@@ -32,7 +32,7 @@ class BaseORMTestCase extends \PHPUnit_Framework_TestCase
 
 	protected $createdSchemas = [];
 
-	public function setUp()
+	public function setUp(): void
 	{
 		$this->setUpDatabase();
 		$this->setUpListeners();
@@ -52,7 +52,8 @@ class BaseORMTestCase extends \PHPUnit_Framework_TestCase
 
 		$dbConfig = [
 			'host'=>'localhost',
-			'user'=>'postgres',
+			'user'=>'main',
+			'password'=>'main',
 			'dbname' => 'ts_vector_test',
 			'driver' => 'pdo_pgsql'
 		];
@@ -78,7 +79,7 @@ class BaseORMTestCase extends \PHPUnit_Framework_TestCase
 		$this->em->getEventManager()->addEventSubscriber(new TsVectorSubscriber());
 	}
 
-	public function tearDown()
+	public function tearDown(): void
 	{
 		if (count($this->createdSchemas) > 0) {
 			$this->dropSchemas($this->createdSchemas);

@@ -20,11 +20,10 @@ use VertigoLabs\DoctrineFullTextPostgres\ORM\Mapping\TsVector;
 class WrongColumnTypeEntity
 {
 	/**
-	 * @var integer
-	 * @Id()
-	 * @Column(name="id", type="integer", nullable=false)
-	 */
-	private $id;
+  * @Id()
+  * @Column(name="id", type="integer", nullable=false)
+  */
+ private int $id;
 	/**
 	 * @Column(type="integer", nullable=true)
 	 */

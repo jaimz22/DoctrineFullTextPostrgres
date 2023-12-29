@@ -13,7 +13,7 @@ use TsVector\Fixture\Article;
 
 class TsQueryTest extends BaseORMTestCase
 {
-	public function setUp()
+	public function setUp(): void
 	{
 		parent::setUp();
 		$this->setUpSchema([Article::class]);
